@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">InventoryApp</string>
+    <string name="empty_text">Your List is empty, Please click the plus sign to add data</string>
+</resources>
