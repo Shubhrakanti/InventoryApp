@@ -1,16 +1,23 @@
 package com.example.inventoryapp;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.inventoryapp.Data.ItemContract.ItemEntry;
 
 /**
@@ -30,14 +37,14 @@ public class ItemCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
 
         ImageView img= (ImageView) view.findViewById(R.id.img);
-        TextView name = (TextView) view.findViewById(R.id.name);
+        final TextView name = (TextView) view.findViewById(R.id.name);
         TextView price = (TextView) view.findViewById(R.id.price);
         TextView supply = (TextView) view.findViewById(R.id.supply);
 
-        int name_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
+        final int name_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
         int price_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
         int img_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
         int supply_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
@@ -60,6 +67,16 @@ public class ItemCursorAdapter extends CursorAdapter {
         } else {
             img.setImageResource(R.drawable.no_img);
         }
+
+        Button saleButton = (Button) view.findViewById(R.id.make_sale);
+        Button deleteButton = (Button) view.findViewById(R.id.delete_curr_item);
+        Button orderButton = (Button) view.findViewById(R.id.order_more);
+
+        final ContentValues values = new ContentValues();
+        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, cursor.getInt(supply_id)-1);
+
+
+
 
 
     }
