@@ -197,15 +197,22 @@ public class ItemProvider extends ContentProvider {
         }
 
         String name = contentValues.getAsString(ItemEntry.COLUMN_ITEM_NAME);
-        if (name == "") {
+        if (name.equals("")) {
             Toast.makeText(getContext(), "You Must Enter a name",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
 
         String supplier = contentValues.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
-        if (supplier == "") {
+        if (supplier.equals("")) {
             Toast.makeText(getContext(), "You Must Enter a supplier",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        String imgBitmap = contentValues.getAsString(ItemEntry.COLUMN_ITEM_IMAGE);
+        if (imgBitmap == null){
+            Toast.makeText(getContext(), "You Must Enter an image",
                     Toast.LENGTH_SHORT).show();
             return false;
         }

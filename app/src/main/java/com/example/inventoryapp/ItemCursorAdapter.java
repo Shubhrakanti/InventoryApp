@@ -1,5 +1,6 @@
 package com.example.inventoryapp;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -45,15 +46,16 @@ public class ItemCursorAdapter extends CursorAdapter {
         TextView supply = (TextView) view.findViewById(R.id.supply);
 
         final int name_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
-        int price_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
-        int img_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
-        int supply_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
+        final int price_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
+        final int img_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
+        final int supply_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
+        final int supplier_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
 
         name.setText(cursor.getString(name_id));
         price.setText("$"+cursor.getString(price_id));
         supply.setText(cursor.getString(supply_id)+" left");
 
-        String bitmapString = cursor.getString(img_id);
+        final String bitmapString = cursor.getString(img_id);
         Bitmap bitmap = null;
         try {
             byte [] encodeByte= Base64.decode(bitmapString,Base64.DEFAULT);
@@ -68,14 +70,48 @@ public class ItemCursorAdapter extends CursorAdapter {
             img.setImageResource(R.drawable.no_img);
         }
 
+
         Button saleButton = (Button) view.findViewById(R.id.make_sale);
         Button deleteButton = (Button) view.findViewById(R.id.delete_curr_item);
         Button orderButton = (Button) view.findViewById(R.id.order_more);
 
-        final ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, cursor.getInt(supply_id)-1);
+        int position = cursor.getPosition();
+        final long id =getItemId(position);
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                ContentValues values= new ContentValues();
+                int newValue = cursor.getInt(supply_id)-1;
+                values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
+                values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(price_id));
+                values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplier_id));
+                values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(name_id));
+                values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
+                context.getContentResolver().update(currentItemUri, values,null, null);
+            }
+        });
 
+        orderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_EMAIL, "example@gmail.com");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Please order more");
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(intent);
+                }
+            }
+        });
 
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                context.getContentResolver().delete(currentItemUri,null,null);
+            }
+        });
 
 
 

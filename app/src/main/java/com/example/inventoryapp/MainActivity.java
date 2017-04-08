@@ -13,18 +13,20 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.example.inventoryapp.Data.ItemContract;
 import com.example.inventoryapp.Data.ItemContract.ItemEntry;
 
 import com.example.inventoryapp.Data.ItemDbHelper;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -52,35 +54,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-                Intent intent;
-                switch (view.getId()){
-                    case R.id.make_sale:
-                        ContentValues values= new ContentValues();
-                        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-                        int supply_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
-                        int newValue = cursor.getInt(supply_id)-1;
-                        values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
-                        getContentResolver().update(currentItemUri, values,null, null);
-                        Log.d("sale","made");
-                    case R.id.order_more:
-                        intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("*/*");
-                        intent.putExtra(Intent.EXTRA_EMAIL, "example@gmail.com");
-                        intent.putExtra(Intent.EXTRA_SUBJECT, "Please order more");
-                        if (intent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(intent);
-                        }
+            Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+            Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+            intent.setData(currentItemUri);
+            startActivity(intent);
 
-                    case R.id.delete_curr_item:
-                        getContentResolver().delete(currentItemUri,null,null);
-
-                    default:
-                        intent = new Intent(MainActivity.this, EditorActivity.class);
-                        currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-                        intent.setData(currentItemUri);
-                        startActivity(intent);
-                }
             }
         });
 
