@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.inventoryapp.Data.ItemContract.ItemEntry;
 
@@ -29,7 +30,7 @@ public class ItemProvider extends ContentProvider {
 
     static {
         sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS, ITEM);
-        sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS, ITEM_ID);
+        sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS + "/#", ITEM_ID);
     }
 
     @Override
@@ -96,17 +97,21 @@ public class ItemProvider extends ContentProvider {
     }
 
     private Uri insertItem(Uri uri, ContentValues values) {
-        checkValues(values);
 
-        SQLiteDatabase db = itemDbHelper.getWritableDatabase();
-        long id = db.insert(ItemEntry.TABLE_NAME, null, values);
-        if (id == -1) {
-            Log.e(LOG_TAG, "Failed to insert row for " + uri);
-            return null;
+        boolean proceed = checkValues(values);
+
+        if(proceed){
+            SQLiteDatabase db = itemDbHelper.getWritableDatabase();
+            long id = db.insert(ItemEntry.TABLE_NAME, null, values);
+            if (id == -1) {
+                Log.e(LOG_TAG, "Failed to insert row for " + uri);
+                return null;
+            }
+
+            getContext().getContentResolver().notifyChange(uri, null);
+            return ContentUris.withAppendedId(uri, id);
         }
-
-        getContext().getContentResolver().notifyChange(uri, null);
-        return ContentUris.withAppendedId(uri, id);
+        return null;
     }
 
     @Override
@@ -152,44 +157,60 @@ public class ItemProvider extends ContentProvider {
 
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
-        checkValues(values);
+        boolean proceed = checkValues(values);
 
-        if (values.size() == 0) {
-            return 0;
+        if(proceed){
+            if (values.size() == 0) {
+                return 0;
+            }
+
+
+            SQLiteDatabase db= itemDbHelper.getWritableDatabase();
+
+            int rowsUpdated = db.update(ItemEntry.TABLE_NAME, values, selection, selectionArgs);
+
+            if (rowsUpdated != 0) {
+                getContext().getContentResolver().notifyChange(uri, null);
+            }
+            return rowsUpdated;
         }
 
+        return 0;
 
-        SQLiteDatabase db= itemDbHelper.getWritableDatabase();
 
-        int rowsUpdated = db.update(ItemEntry.TABLE_NAME, values, selection, selectionArgs);
-
-        if (rowsUpdated != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
-        return rowsUpdated;
     }
 
 
-    private void checkValues (ContentValues contentValues){
-        Integer price = contentValues.getAsInteger(ItemEntry.COLUMN_ITEM_PRICE);
-        if (price == null && price < 0) {
-            throw new IllegalArgumentException("Pet requires valid gender");
+    private boolean checkValues (ContentValues contentValues){
+        Double price = contentValues.getAsDouble(ItemEntry.COLUMN_ITEM_PRICE);
+        if (price == null || price <= 0) {
+            Toast.makeText(getContext(), "You Must Enter a price",
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         Integer amount = contentValues.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
-        if (amount == null && amount < 0) {
-            throw new IllegalArgumentException("Pet requires valid gender");
+        if (amount == null || amount <= 0) {
+            Toast.makeText(getContext(), "You Must Enter a quantity",
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         String name = contentValues.getAsString(ItemEntry.COLUMN_ITEM_NAME);
-        if (name == null) {
-            throw new IllegalArgumentException("Pet requires a name");
+        if (name == "") {
+            Toast.makeText(getContext(), "You Must Enter a name",
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         String supplier = contentValues.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
-        if (supplier == null) {
-            throw new IllegalArgumentException("Pet requires a name");
+        if (supplier == "") {
+            Toast.makeText(getContext(), "You Must Enter a supplier",
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
+
+        return true;
 
     }
 }

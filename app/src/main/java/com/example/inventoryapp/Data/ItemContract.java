@@ -27,7 +27,7 @@ public class ItemContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ITEMS;
 
 
-        public final static String TABLE_NAME = "inventory";
+        public final static String TABLE_NAME = "items";
 
 
 

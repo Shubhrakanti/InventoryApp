@@ -1,8 +1,10 @@
 package com.example.inventoryapp;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -13,6 +15,9 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import com.example.inventoryapp.Data.ItemContract.ItemEntry;
 
@@ -33,13 +38,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         itemDbHelper = new ItemDbHelper(getApplicationContext());
 
-        getLoaderManager().initLoader(LOADER_ID, null, this);
-
         ListView listView = (ListView) findViewById(R.id.list);
 
         itemCursorAdapter = new ItemCursorAdapter(this, null);
 
         listView.setAdapter(itemCursorAdapter);
+
+        listView.setEmptyView(findViewById(R.id.empty_view));
+
+        Button ig = (Button) findViewById(R.id.add);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                Uri currentPetUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                intent.setData(currentPetUri);
+                startActivity(intent);
+
+            }
+        });
+
+        ig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -79,15 +108,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
-            // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertPet();
                 return true;
-            // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
                 deletePets();
                 return true;
         }

@@ -11,7 +11,7 @@ import com.example.inventoryapp.Data.ItemContract.ItemEntry;
 
 public class ItemDbHelper  extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "inventory.db";
+    private static final String DATABASE_NAME = "items.db";
 
     private static final int DATABASE_VERSION = 1;
 

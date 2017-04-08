@@ -43,8 +43,8 @@ public class ItemCursorAdapter extends CursorAdapter {
         int supply_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
 
         name.setText(cursor.getString(name_id));
-        price.setText(cursor.getString(price_id));
-        supply.setText(cursor.getString(supply_id));
+        price.setText("$"+cursor.getString(price_id));
+        supply.setText(cursor.getString(supply_id)+" left");
 
         String bitmapString = cursor.getString(img_id);
         Bitmap bitmap = null;
