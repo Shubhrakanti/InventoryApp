@@ -71,49 +71,5 @@ public class ItemCursorAdapter extends CursorAdapter {
         }
 
 
-        Button saleButton = (Button) view.findViewById(R.id.make_sale);
-        Button deleteButton = (Button) view.findViewById(R.id.delete_curr_item);
-        Button orderButton = (Button) view.findViewById(R.id.order_more);
-
-        int position = cursor.getPosition();
-        final long id =getItemId(position);
-        saleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-                ContentValues values= new ContentValues();
-                int newValue = cursor.getInt(supply_id)-1;
-                values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
-                values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(price_id));
-                values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplier_id));
-                values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(name_id));
-                values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
-                context.getContentResolver().update(currentItemUri, values,null, null);
-            }
-        });
-
-        orderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("*/*");
-                intent.putExtra(Intent.EXTRA_EMAIL, "example@gmail.com");
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Please order more");
-                if (intent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(intent);
-                }
-            }
-        });
-
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-                context.getContentResolver().delete(currentItemUri,null,null);
-            }
-        });
-
-
-
     }
 }

@@ -122,4 +122,39 @@
             android:inputType="number"
             android:paddingLeft="4dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/outer_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:descendantFocusability="blocksDescendants"
+        android:visibility="gone">
+        <Button
+            android:id="@+id/delete_curr_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9sp"
+            android:text="@string/action_delete" />
+        <Button
+            android:id="@+id/order_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9sp"
+            android:text="order" />
+        <Button
+            android:id="@+id/make_sale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9sp"
+            android:text="Sale" />
+        <Button
+            android:id="@+id/increase_inventory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9sp"
+            android:text="Insert ITem" />
+    </LinearLayout>
+
+
     </LinearLayout>

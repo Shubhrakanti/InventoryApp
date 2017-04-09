@@ -33,40 +33,13 @@
             tools:text="$3.00"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:descendantFocusability="blocksDescendants">
-        <Button
-            android:id="@+id/delete_curr_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="9sp"
-            android:text="@string/action_delete" />
-        <Button
-            android:id="@+id/order_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="9sp"
-            android:text="order" />
-        <Button
-            android:id="@+id/make_sale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="9sp"
-            android:text="Sale" />
-
-
-    </LinearLayout>
-
 
     <TextView
         android:id="@+id/supply"
         android:layout_marginTop="21dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="end"
+        android:layout_gravity="end"
         tools:text="5 Left"/>
 
 

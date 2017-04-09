@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.example.inventoryapp.Data.ItemContract.ItemEntry;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +46,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private boolean mItemHasChanged = false;
 
-    private static final int EXISTING_ITEM_LOADER = 0;
+    private static final int EXISTING_ITEM_LOADER = 1;
+
+    private Button saleButton;
+    private Button deleteButton;
+    private Button orderButton;
+    private Button insertButton;
+
+    private LinearLayout linearLayout;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -104,6 +112,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
             }
         });
+
 
 
 
@@ -280,31 +289,33 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data == null || data.getCount() < 1) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
+        if (cursor == null || cursor.getCount() < 1) {
             return;
         }
 
-        if (data.moveToFirst()) {
+        if (cursor.moveToFirst()) {
 
-            int nameColumnIndex = data.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
-            int priceColumnIndex = data.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
-            int supplierColumnIndex = data.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
-            int imageColumnIndex = data.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
-            int quantityColumnIndex = data.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
+            final int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
+            final int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
+            final int supplierColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
+            final int imageColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
+            final int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
 
-            String name = data.getString(nameColumnIndex);
-            String price = data.getString(priceColumnIndex);
-            String supplier = data.getString(supplierColumnIndex);
-            String image = data.getString(imageColumnIndex);
-            String quantity = data.getString(quantityColumnIndex);
+            String name = cursor.getString(nameColumnIndex);
+            String price = cursor.getString(priceColumnIndex);
+            String supplier = cursor.getString(supplierColumnIndex);
+            String image = cursor.getString(imageColumnIndex);
+            String quantity = cursor.getString(quantityColumnIndex);
 
             nameEdit.setText(name);
             priceEdit.setText(price);
             supplierEdit.setText(supplier);
             quantityEdit.setText(quantity);
 
-            String bitmapString = image;
+
+
+            final String bitmapString = image;
             Bitmap bitmap = null;
             try {
                 byte [] encodeByte= Base64.decode(bitmapString,Base64.DEFAULT);
@@ -318,6 +329,64 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             } else {
                 imageEdit.setImageResource(R.drawable.no_img);
             }
+
+
+            linearLayout = (LinearLayout) findViewById(R.id.outer_box);
+            linearLayout.setVisibility(View.VISIBLE);
+
+            saleButton = (Button) findViewById(R.id.make_sale);
+            deleteButton = (Button) findViewById(R.id.delete_curr_item);
+            orderButton = (Button) findViewById(R.id.order_more);
+            insertButton = (Button) findViewById(R.id.increase_inventory);
+
+
+            saleButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContentValues values= new ContentValues();
+                    int newValue = cursor.getInt(quantityColumnIndex)-1;
+                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
+                    values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(priceColumnIndex));
+                    values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplierColumnIndex));
+                    values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(nameColumnIndex));
+                    values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
+                    getContentResolver().update(data, values,null, null);
+                }
+            });
+
+            orderButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_EMAIL, "example@gmail.com");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Please order more");
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(intent);
+                    }
+                }
+            });
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   deleteItem();
+                }
+            });
+
+            insertButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContentValues values= new ContentValues();
+                    int newValue = cursor.getInt(quantityColumnIndex)+1;
+                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
+                    values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(priceColumnIndex));
+                    values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplierColumnIndex));
+                    values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(nameColumnIndex));
+                    values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
+                    getContentResolver().update(data, values,null, null);
+                }
+            });
 
 
         }
