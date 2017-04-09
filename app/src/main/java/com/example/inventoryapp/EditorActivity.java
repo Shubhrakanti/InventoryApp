@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -250,6 +251,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public void onBackPressed() {
         if (!mItemHasChanged) {
             super.onBackPressed();
+            finish();
             return;
         }
 
@@ -280,7 +282,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         };
 
         return  new CursorLoader(this,
-                ItemEntry.CONTENT_URI,
+                data,
                 projection,
                 null,
                 null,
