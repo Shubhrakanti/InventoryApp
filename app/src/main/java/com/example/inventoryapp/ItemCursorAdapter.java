@@ -81,7 +81,7 @@ public class ItemCursorAdapter extends CursorAdapter {
 
         final long idCurrent = getItemId(cursor.getPosition());
 
-        final int newValue = cursor.getInt(supply_id);
+        final int newValue = cursor.getInt(supply_id) - 1;
         final double priceFinal = cursor.getDouble(price_id);
         final String supplierFinal = cursor.getString(supplier_id);
         final String nameFinal = cursor.getString(name_id);
@@ -95,7 +95,8 @@ public class ItemCursorAdapter extends CursorAdapter {
                 values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,supplierFinal);
                 values.put(ItemEntry.COLUMN_ITEM_NAME,nameFinal);
                 values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
-                context.getContentResolver().update(currentItemUri, values,null, null);
+                int i = context.getContentResolver().update(currentItemUri, values,null, null);
+                Log.d("this", String.valueOf(i));
             }
       });
     }
