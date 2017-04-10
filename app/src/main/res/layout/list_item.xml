@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="14dp">
+    android:padding="14dp"
+    android:descendantFocusability="blocksDescendants">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img"
@@ -32,6 +33,13 @@
             android:layout_height="wrap_content"
             tools:text="$3.00"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/make_sale_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="9sp"
+        android:text="Sale" />
 
 
     <TextView

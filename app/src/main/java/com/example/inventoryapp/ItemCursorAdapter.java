@@ -38,6 +38,11 @@ public class ItemCursorAdapter extends CursorAdapter {
     }
 
     @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return super.getView(position, convertView, parent);
+    }
+
+    @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
 
         ImageView img= (ImageView) view.findViewById(R.id.img);
@@ -50,6 +55,7 @@ public class ItemCursorAdapter extends CursorAdapter {
         final int img_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
         final int supply_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
         final int supplier_id = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
+        final int id_id = cursor.getColumnIndex(ItemEntry._ID);
 
         name.setText(cursor.getString(name_id));
         price.setText("$"+cursor.getString(price_id));
@@ -70,6 +76,23 @@ public class ItemCursorAdapter extends CursorAdapter {
             img.setImageResource(R.drawable.no_img);
         }
 
+        Button saleButton = (Button) view.findViewById(R.id.make_sale_item);
 
+
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, cursor.getInt(id_id));
+                ContentValues values= new ContentValues();
+                Log.d("THis", String.valueOf(cursor.getInt(id_id)));
+                int newValue = cursor.getInt(supply_id);
+                values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
+                values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(price_id));
+                values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplier_id));
+                values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(name_id));
+                values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
+                context.getContentResolver().update(currentItemUri, values,null, null);
+            }
+      });
     }
 }

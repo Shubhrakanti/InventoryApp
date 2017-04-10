@@ -347,12 +347,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 public void onClick(View v) {
                     ContentValues values= new ContentValues();
                     int newValue = cursor.getInt(quantityColumnIndex)-1;
-                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
-                    values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(priceColumnIndex));
-                    values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplierColumnIndex));
-                    values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(nameColumnIndex));
-                    values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
-                    getContentResolver().update(data, values,null, null);
+                    if(newValue <= 0){
+                        Toast.makeText(EditorActivity.this, "Need more supply, keep at least one for display", Toast.LENGTH_LONG).show();
+                    } else {
+                        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, newValue);
+                        values.put(ItemEntry.COLUMN_ITEM_PRICE, cursor.getDouble(priceColumnIndex));
+                        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, cursor.getString(supplierColumnIndex));
+                        values.put(ItemEntry.COLUMN_ITEM_NAME, cursor.getString(nameColumnIndex));
+                        values.put(ItemEntry.COLUMN_ITEM_IMAGE, bitmapString);
+                        getContentResolver().update(data, values, null, null);
+                    }
                 }
             });
 
