@@ -182,12 +182,6 @@ public class ItemProvider extends ContentProvider {
 
 
     private boolean checkValues (ContentValues contentValues){
-        Double price = contentValues.getAsDouble(ItemEntry.COLUMN_ITEM_PRICE);
-        if (price == null || price <= 0) {
-            Toast.makeText(getContext(), "You Must Enter a price",
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
 
         Integer amount = contentValues.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
         if (amount == null || amount <= 0) {
@@ -195,6 +189,15 @@ public class ItemProvider extends ContentProvider {
                     Toast.LENGTH_SHORT).show();
             return false;
         }
+
+
+        Double price = contentValues.getAsDouble(ItemEntry.COLUMN_ITEM_PRICE);
+        if (price == null || price <= 0) {
+            Toast.makeText(getContext(), "You Must Enter a price",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
 
         String name = contentValues.getAsString(ItemEntry.COLUMN_ITEM_NAME);
         if (name.equals("")) {

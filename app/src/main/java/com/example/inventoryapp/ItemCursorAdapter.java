@@ -77,19 +77,23 @@ public class ItemCursorAdapter extends CursorAdapter {
         }
 
         Button saleButton = (Button) view.findViewById(R.id.make_sale_item);
+        final ContentValues values= new ContentValues();
 
+        final long idCurrent = getItemId(cursor.getPosition());
+
+        final int newValue = cursor.getInt(supply_id);
+        final double priceFinal = cursor.getDouble(price_id);
+        final String supplierFinal = cursor.getString(supplier_id);
+        final String nameFinal = cursor.getString(name_id);
 
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, cursor.getInt(id_id));
-                ContentValues values= new ContentValues();
-                Log.d("THis", String.valueOf(cursor.getInt(id_id)));
-                int newValue = cursor.getInt(supply_id);
+                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, idCurrent);
                 values.put(ItemEntry.COLUMN_ITEM_QUANTITY,newValue);
-                values.put(ItemEntry.COLUMN_ITEM_PRICE,cursor.getDouble(price_id));
-                values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,cursor.getString(supplier_id));
-                values.put(ItemEntry.COLUMN_ITEM_NAME,cursor.getString(name_id));
+                values.put(ItemEntry.COLUMN_ITEM_PRICE,priceFinal);
+                values.put(ItemEntry.COLUMN_ITEM_SUPPLIER,supplierFinal);
+                values.put(ItemEntry.COLUMN_ITEM_NAME,nameFinal);
                 values.put(ItemEntry.COLUMN_ITEM_IMAGE,bitmapString);
                 context.getContentResolver().update(currentItemUri, values,null, null);
             }
